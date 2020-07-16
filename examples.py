@@ -7,9 +7,15 @@ sender = web3py.to_checksum("0x31a16adf2d5fc73f149fbb779d20c036678b1bbd")
 txid = HexStr("0xf87bd91e8d9974792ab9799ac5550ed024117f05ecf28697ca2083bb6a5edafa")
 receiver = web3py.to_checksum("0x31a16adf2d5fc73f149fbb779d20c036678b1bbd")
 amount = 1
-private_key = HexStr("0x")
+private_key = HexStr("00")
 from_block = 7798718
 to_block = 7798718
+
+wei = web3py.to_wei(amount)
+print(wei)
+
+wei = web3py.to_wei(amount, "gwei")
+print(wei)
 
 sync_status = web3py.get_sync_status()
 print(sync_status)
@@ -45,9 +51,9 @@ print(transaction_events)
 block_events = web3py.get_events(appcoins, "Transfer", from_block, to_block)
 print(block_events)
 
-txid = web3py.send_eth(sender, private_key, receiver, amount)
+txid = web3py.send_eth(sender, private_key, receiver, web3py.to_wei(amount))
 print(txid)
 
 txid = web3py.launch_function(appcoins, "transfer", sender, private_key,
-                              receiver, amount)
+                              receiver, web3py.to_wei(amount))
 print(txid)

@@ -6,7 +6,7 @@ from web3 import Web3, HTTPProvider
 from web3.contract import Contract
 from web3.exceptions import TransactionNotFound
 from web3.types import TxReceipt, TxData, EventData, ChecksumAddress, HexStr,\
-    TxParams
+    TxParams, Wei
 
 
 APPCOINS_ROPSTEN = "0xab949343E6C369C6B17C7ae302c1dEbD4B7B61c3"
@@ -30,8 +30,11 @@ class Web3Manager:
                  ) -> None:
         self.web3 = web3
         self.gas_limit = 100000
-        self.gas_min = 5
-        self.gas_max = 50
+        self.gas_min = 5  # Gwei
+        self.gas_max = 50  # Gwei
+
+    def to_wei(self, amount: float, unit: str = "ether") -> Wei:
+        return self.web3.toWei(amount, unit)
 
     @staticmethod
     def to_checksum(wallet: str) -> ChecksumAddress:
@@ -57,7 +60,7 @@ class Web3Manager:
                     peers=self.web3.net.peerCount)
 
     def get_gas_price(self) -> int:
-        suggested = int(self.web3.eth.gasPrice)
+        suggested = int(self.web3.eth.gasPrice)  # Gwei
         return self.gas_max if suggested > self.gas_max \
             else suggested if suggested > self.gas_min else self.gas_min
 
@@ -108,7 +111,7 @@ class Web3Manager:
         return Web3.toHex(self.web3.eth.sendRawTransaction(raw_transaction))
 
     def send_eth(self, sender: ChecksumAddress, private_key: HexStr,
-                 receiver: ChecksumAddress, amount: int) -> HexStr:
+                 receiver: ChecksumAddress, amount: Wei) -> HexStr:
         tx_params = {**self.get_transaction_params(sender),
                      "to": Web3.toChecksumAddress(receiver),
                      "value": amount}
